@@ -17,19 +17,19 @@ Further details can be found in the requirements.txt file
 
 ## 2. Project Motivation
 
- In this project, I analyze disaster response data from Figure Eight to build a model for an API that classifies disaster messages. The data set provided by Figure Eight contains real messages that were sent during disasters.
+ In this project, disaster response data from Figure Eight has been analysed to build a model for an API that classifies disaster messages. The data set provided by Figure Eight contains real messages that were sent during disasters.
 
 I have created an ML pipeline to categorize these messages  in order to send them to the appropriate disaster relief agency. 
 The data has been split into a training set and a test set, post which an ML pipeline utilizing NLTK and Scikit Learn is used to output a final model. Finally
 
 A web app built using Flask and Bootstrap is the final output of the project. Through the app, a Disaster Relief agency can input a message to categorize. The output also shows visualisations of the data. 
-![disaster graph2](drp2.png)
+![webpage_visualisation2](drp2.png)
 The web app also displays visualizations of the data as follows:
-![disaster graph1](drp1.png)
+![webpage_visualisation1](drp1.png)
 
 
 
-## 4.Instructions:
+## 4. Instructions:
 	1. Run the following commands in the project's root directory to set up your database and model.
 
     	- To run ETL pipeline that cleans data and stores in database
