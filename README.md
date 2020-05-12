@@ -1,7 +1,7 @@
 # Disaster Response Pipeline
 
 ## Requirements
-I have used Python 2.6.3 for this project. The libraries used for are: 
+I have used Python 3.7.6 for this project. The libraries used for are: 
 - numpy == 1.12.1
 - pandas == 0.23.3
 - plotly == 2.0.15
