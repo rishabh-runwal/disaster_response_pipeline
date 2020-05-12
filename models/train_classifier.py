@@ -7,9 +7,9 @@ from sqlalchemy import create_engine
 import re
 import nltk
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.multioutput import MultiOutputClassifier
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -45,9 +45,9 @@ def tokenize(text):
     Tokenize function
     
     Arguments:
-        text:> list of text messages (english)
+        text: list of text messages (english)
     Output:
-        clean_token:> tokenized text, clean for ML modeling
+        clean_token: tokenized text, clean for ML modeling
     """
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     detected_urls = re.findall(url_regex, text)
@@ -89,44 +89,32 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
         return pd.DataFrame(X_tagged)
 
 def build_model():
-    """
-    Build Model function
-    
-    This function output is a Scikit ML Pipeline that process text messages
-    according to NLP best-practice and apply a classifier.
-    """
-    
     pipeline = Pipeline([
-        ('features', FeatureUnion([
-
-            ('text_pipeline', Pipeline([
-                ('vect', CountVectorizer(tokenizer=tokenize)),
-                ('tfidf', TfidfTransformer())
-            ])),
-
-            ('starting_verb', StartingVerbExtractor())
-        ])),
-
-        ('clf', MultiOutputClassifier(AdaBoostClassifier()))
-    ])
-
-    return pipeline
-
-
+    ('vect', CountVectorizer(tokenizer = tokenize)),
+    ('tfidf', TfidfTransformer()),
+    ('clf', MultiOutputClassifier(RandomForestClassifier()))])
+    
+    parameters = { 
+              'tfidf__use_idf': (True, False), 
+              'clf__estimator__n_estimators': [50, 100], 
+              'clf__estimator__min_samples_split': [2, 4]} 
+    cv = GridSearchCV(pipeline, param_grid=parameters)
+    
+    return cv
 def evaluate_model(model, X_test, Y_test, category_names):
     """
     Arguments:
-        model -> Scikit ML Pipeline
-        X_test -> test features
-        Y_test -> test labels
-        category_names -> label names (multi-output)
+        model : Scikit ML Pipeline
+        X_test : test features
+        Y_test : test labels
+        category_names : label names (multi-output)
     """
     y_pred=model.predict(X_test)
     labels = np.unique(y_pred)
     i=-1
     for column in Y_test.columns:
         i=i+1
-    print (classification_report(Y_test[column], y_pred[:,i], labels= labels))
+        print (classification_report(Y_test[column], y_pred[:,i], labels= labels))
     pass
 
 
